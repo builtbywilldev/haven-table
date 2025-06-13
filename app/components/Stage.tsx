@@ -48,7 +48,8 @@ export function Stage() {
           <>
             {!isMobile ? (
               mockAgents.map((agent, index) => {
-                const angle = (index / mockAgents.length) * 2 * Math.PI - Math.PI / 2;
+                const angle =
+                  (index / mockAgents.length) * 2 * Math.PI - Math.PI / 2;
                 const x = radius * Math.cos(angle);
                 const y = radius * Math.sin(angle);
                 return (
@@ -76,14 +77,21 @@ export function Stage() {
         )}
 
         {/* Center Card */}
-        <div className="absolute left-1/2 top-1/2 z-20 transform -translate-x-1/2 -translate-y-1/2 text-center bg-[#1a1a1a] text-white rounded-lg px-6 py-4 shadow-lg border border-gray-700 w-full max-w-md">
+        <div
+          className={`absolute z-20 bg-[#1a1a1a] text-white rounded-lg shadow-lg border border-gray-700 w-full max-w-md ${
+            isMobile
+              ? "inset-x-0 bottom-6 mx-auto px-4 py-4"
+              : "left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 px-6 py-4 text-center"
+          }`}
+        >
           {!started ? (
             <>
               <p className="mb-2 text-white font-mono tracking-wide">
                 ⚔️ The Haven Table is open.
               </p>
               <p className="text-sm text-gray-300">
-                This is a zero-storage, in-browser simulation chamber. Agents will speak in sequence.
+                This is a zero-storage, in-browser simulation chamber. Agents
+                will speak in sequence.
               </p>
               <p className="mt-2 italic text-gray-500 text-xs">
                 No data is saved. Nothing leaves the circle.
@@ -102,9 +110,7 @@ export function Stage() {
               <input
                 type="text"
                 placeholder="Your interjection..."
-                className={`w-full px-4 py-2 rounded-md bg-gray-800 border border-gray-600 text-sm text-white ${
-                  isMobile ? "mt-4" : "mt-8"
-                }`}
+                className="w-full px-3 py-2 rounded-md bg-gray-800 border border-gray-600 text-sm text-white"
               />
             </>
           )}

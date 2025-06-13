@@ -1,6 +1,14 @@
 // app/layout.tsx
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs";
 import "./globals.css";
 
 // Fonts
@@ -39,12 +47,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="bg-black text-gray-100">
-      <body
-        className={`min-h-screen ${geistSans.variable} ${geistMono.variable} antialiased font-sans`}
-      >
-        {children}
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" className="bg-black text-gray-100">
+        <body
+          className={`min-h-screen ${geistSans.variable} ${geistMono.variable} antialiased font-sans`}
+        >
+          <header className="p-4">
+            <SignedOut>
+              <SignInButton />
+              <SignUpButton className="ml-4" />
+            </SignedOut>
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
+          </header>
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
