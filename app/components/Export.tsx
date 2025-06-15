@@ -1,29 +1,28 @@
-"use client";
+type ExportProps = {
+  messages: { speaker: string; content: string }[];
+};
 
-import { SignedIn } from "@clerk/nextjs";
-import { mockAgents } from "../constants";
-
-export default function Export() {
-  const handleExport = () => {
-    const blob = new Blob([JSON.stringify(mockAgents, null, 2)], {
-      type: "application/json",
-    });
+export default function Export({ messages }: ExportProps) {
+  const download = () => {
+    const content = messages
+      .map((m) => `${m.speaker}: ${m.content}`)
+      .join("\n");
+    const blob = new Blob([content], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "debate_log.json";
-    link.click();
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "debate_transcript.txt";
+    a.click();
     URL.revokeObjectURL(url);
   };
 
   return (
-    <SignedIn>
-      <button
-        onClick={handleExport}
-        className="fixed bottom-4 right-4 px-4 py-2 rounded-full bg-[#6C47FF] text-white hover:bg-[#845FFF] transition shadow-lg z-50"
-      >
-        🧠 Export Debate
-      </button>
-    </SignedIn>
+    <button
+      onClick={download}
+      className="bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-600"
+    >
+      Export Transcript
+    </button>
   );
 }
