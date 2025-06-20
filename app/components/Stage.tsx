@@ -8,6 +8,7 @@ import Transcript from "./Transcipt";
 import Export from "./Export";
 import { useDebate } from "./UseDebate";
 import EndDebatePrompt from "./EndDebatePrompt";
+import InterjectionInput from "./InterjectionInput";
 
 export function Stage() {
   const [started, setStarted] = useState(false);
@@ -87,12 +88,6 @@ export function Stage() {
       setInitialPrompt(interjection);
       setDebateEnded(false);
       setStarted(true);
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!started && e.key === "Enter") {
-      handleStartDebate();
     }
   };
 
@@ -178,25 +173,12 @@ export function Stage() {
           <p className="text-xs italic text-gray-500 mt-1">
             No data is saved. Nothing leaves the circle.
           </p>
-          <input
-            type="text"
-            value={interjection}
-            onChange={(e) => setInterjection(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="What are we debating today?"
-            className="mt-6 px-4 py-2 rounded-md bg-gray-800 border border-gray-600 text-sm text-white w-full max-w-sm text-center"
-          />
-          <button
-            onClick={handleStartDebate}
+          <InterjectionInput
+            interjection={interjection}
+            setInterjection={setInterjection}
+            onStartDebate={handleStartDebate}
             disabled={!interjection.trim()}
-            className={`mt-4 px-6 py-3 rounded-md transition ${
-              interjection.trim()
-                ? "bg-[#6C47FF] text-white hover:bg-[#845FFF]"
-                : "bg-gray-700 text-gray-400 cursor-not-allowed"
-            }`}
-          >
-            Start Debate
-          </button>
+          />
         </div>
       )}
     </div>
