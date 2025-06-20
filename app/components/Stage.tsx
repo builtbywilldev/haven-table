@@ -17,13 +17,19 @@ export function Stage() {
   const [messages, setMessages] = useState<{ speaker: string; content: string }[]>([]);
   const [currentSpeaker, setCurrentSpeaker] = useState("");
   const [interjection, setInterjection] = useState("");
+  const [liveInterjection, setLiveInterjection] = useState("");
   const [initialPrompt, setInitialPrompt] = useState("");
   const [debateEnded, setDebateEnded] = useState(false);
 
   const tableRef = useRef<HTMLDivElement>(null);
   const isSignedIn = true;
 
-  useDebate(started && !debateEnded, setMessages, setCurrentSpeaker, initialPrompt);
+  useDebate(
+    started && !debateEnded,
+    setMessages,
+    setCurrentSpeaker,
+    initialPrompt
+  );
 
   useEffect(() => {
     const updateSize = () => {
@@ -77,6 +83,7 @@ export function Stage() {
           setInterjection("");
           setInitialPrompt("");
           setDebateEnded(false);
+          setLiveInterjection("");
           toast.dismiss(t);
         }}
       />
@@ -91,6 +98,15 @@ export function Stage() {
     }
   };
 
+  const handleLiveInterjectionSubmit = () => {
+    if (!liveInterjection.trim()) return;
+    setMessages((prev) => [
+      ...prev,
+      { speaker: "User", content: liveInterjection.trim() },
+    ]);
+    setLiveInterjection("");
+  };
+
   return (
     <div className="w-full h-screen flex flex-col md:flex-row bg-black text-white overflow-hidden">
       {started ? (
@@ -102,6 +118,16 @@ export function Stage() {
               readOnly
               className="w-full max-w-sm px-4 py-2 rounded-md bg-gray-800 border border-gray-600 text-sm text-white"
             />
+            <InterjectionInput
+              interjection={interjection}
+              setInterjection={setInterjection}
+              started={started}
+              disabled={false}
+              liveInterjection={liveInterjection}
+              setLiveInterjection={setLiveInterjection}
+              onStartDebate={handleStartDebate}
+              onSubmitLiveInterjection={handleLiveInterjectionSubmit}
+            />
             <div
               ref={tableRef}
               className="flex justify-center items-center flex-grow w-full"
@@ -109,7 +135,10 @@ export function Stage() {
               {isMobile ? (
                 <div className="flex flex-wrap justify-center gap-4">
                   {mockAgents.map((agent) => (
-                    <AgentCard key={agent.name} agent={{ ...agent, message: "" }} />
+                    <AgentCard
+                      key={agent.name}
+                      agent={{ ...agent, message: "" }}
+                    />
                   ))}
                 </div>
               ) : (
@@ -118,7 +147,8 @@ export function Stage() {
                   style={{ width: `${tableSize}px`, height: `${tableSize}px` }}
                 >
                   {mockAgents.map((agent, index) => {
-                    const angle = (index / mockAgents.length) * 2 * Math.PI - Math.PI / 2;
+                    const angle =
+                      (index / mockAgents.length) * 2 * Math.PI - Math.PI / 2;
                     const x = radius * Math.cos(angle);
                     const y = radius * Math.sin(angle);
                     return (
@@ -143,7 +173,9 @@ export function Stage() {
           <div className="w-full md:w-1/2 flex flex-col px-4 py-6 space-y-4">
             <div className="bg-[#1a1a1a] p-4 rounded-md border border-gray-700 shadow-md">
               <p className="text-sm text-gray-400 mb-1">Now Speaking:</p>
-              <p className="text-lg font-mono">{currentSpeaker || "Waiting..."}</p>
+              <p className="text-lg font-mono">
+                {currentSpeaker || "Waiting..."}
+              </p>
             </div>
             <div className="max-h-[400px] overflow-y-auto rounded-md border border-gray-700 bg-[#111] p-4 shadow-inner">
               <Transcript messages={messages} />
@@ -166,9 +198,12 @@ export function Stage() {
         </>
       ) : (
         <div className="w-full h-full flex flex-col items-center justify-center text-center px-4">
-          <h1 className="text-xl md:text-2xl text-blue-300 font-semibold">The Haven Table is open.</h1>
+          <h1 className="text-xl md:text-2xl text-blue-300 font-semibold">
+            The Haven Table is open.
+          </h1>
           <p className="text-gray-400 mt-2 max-w-sm">
-            This is a zero-storage, in-browser simulation chamber. Agents will speak in sequence.
+            This is a zero-storage, in-browser simulation chamber. Agents will
+            speak in sequence.
           </p>
           <p className="text-xs italic text-gray-500 mt-1">
             No data is saved. Nothing leaves the circle.
@@ -178,6 +213,10 @@ export function Stage() {
             setInterjection={setInterjection}
             onStartDebate={handleStartDebate}
             disabled={!interjection.trim()}
+            started={started}
+            liveInterjection={liveInterjection}
+            setLiveInterjection={setLiveInterjection}
+            onSubmitLiveInterjection={handleLiveInterjectionSubmit}
           />
         </div>
       )}
